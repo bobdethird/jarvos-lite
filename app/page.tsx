@@ -9,22 +9,11 @@ import {
   InputGroupButton,
   InputGroupTextarea,
 } from "@/components/ui/input-group";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-  ComboboxTrigger,
-} from "@/components/ui/combobox";
-import { Button } from "@/components/ui/button";
 import { ArrowUp } from "lucide-react";
 import { useChatContext } from "@/contexts/chat-context";
-import { DEFAULT_MODEL, MODELS } from "@/lib/models";
 
 function ChatView({ chatId }: { chatId: string }) {
   const [input, setInput] = useState("");
-  const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL);
   const { getMessagesForChat, saveMessagesForChat } = useChatContext();
   const initialMessages = getMessagesForChat(chatId);
 
@@ -40,7 +29,7 @@ function ChatView({ chatId }: { chatId: string }) {
 
   const handleSend = () => {
     if (!input.trim()) return;
-    sendMessage({ text: input }, { body: { model: selectedModel } });
+    sendMessage({ text: input });
     setInput("");
   };
 
@@ -104,39 +93,6 @@ function ChatView({ chatId }: { chatId: string }) {
                 }}
               />
               <InputGroupAddon align="block-end">
-                <Combobox
-                  value={selectedModel}
-                  onValueChange={(v) => setSelectedModel(v ?? DEFAULT_MODEL)}
-                  items={MODELS.map((m) => m.id)}
-                  itemToStringLabel={(id) =>
-                    MODELS.find((m) => m.id === id)?.label ?? id
-                  }
-                >
-                  <ComboboxTrigger
-                    render={<Button variant="outline" size="sm" />}
-                    className="shrink-0"
-                  >
-                    {MODELS.find((m) => m.id === selectedModel)?.label ??
-                      selectedModel}
-                  </ComboboxTrigger>
-                  <ComboboxContent>
-                    <ComboboxInput
-                      showTrigger={false}
-                      placeholder="Search models..."
-                      className="border-0"
-                    />
-                    <ComboboxList>
-                      {(item) => {
-                        const model = MODELS.find((m) => m.id === item);
-                        return model ? (
-                          <ComboboxItem key={model.id} value={model.id}>
-                            {model.label}
-                          </ComboboxItem>
-                        ) : null;
-                      }}
-                    </ComboboxList>
-                  </ComboboxContent>
-                </Combobox>
                 <InputGroupButton
                   type="submit"
                   size="icon-sm"
