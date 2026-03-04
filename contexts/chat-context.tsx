@@ -5,6 +5,7 @@ import type { UIMessage } from "ai";
 import type { Chat } from "@/lib/chat-store";
 import {
   createChat as createChatInStore,
+  deleteChat as deleteChatInStore,
   getChats,
   getMessages,
   saveMessages as saveMessagesInStore,
@@ -14,6 +15,7 @@ type ChatContextValue = {
   chats: Chat[];
   currentChatId: string | null;
   createChat: () => string;
+  deleteChat: (id: string) => void;
   switchChat: (id: string) => void;
   getMessagesForChat: (id: string) => UIMessage[];
   saveMessagesForChat: (id: string, messages: UIMessage[]) => void;
@@ -49,6 +51,21 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     return newChat.id;
   }, []);
 
+  const deleteChat = useCallback((id: string) => {
+    deleteChatInStore(id);
+    const remaining = getChats();
+    setChats(remaining);
+    if (currentChatId === id) {
+      if (remaining.length > 0) {
+        setCurrentChatId(remaining[0].id);
+      } else {
+        const newChat = createChatInStore();
+        setChats(getChats());
+        setCurrentChatId(newChat.id);
+      }
+    }
+  }, [currentChatId]);
+
   const switchChat = useCallback((id: string) => {
     setCurrentChatId(id);
   }, []);
@@ -68,6 +85,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         chats,
         currentChatId,
         createChat,
+        deleteChat,
         switchChat,
         getMessagesForChat,
         saveMessagesForChat,

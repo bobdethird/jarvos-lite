@@ -1,6 +1,6 @@
 "use client";
 
-import { MessageSquare, Plus } from "lucide-react";
+import { MessageSquare, Plus, Trash2 } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -8,6 +8,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -15,7 +16,7 @@ import {
 import { useChatContext } from "@/contexts/chat-context";
 
 export function AppSidebar() {
-  const { chats, currentChatId, createChat, switchChat } = useChatContext();
+  const { chats, currentChatId, createChat, deleteChat, switchChat } = useChatContext();
 
   return (
     <Sidebar collapsible="icon">
@@ -47,6 +48,16 @@ export function AppSidebar() {
                   <MessageSquare className="size-4" />
                   <span className="truncate">{chat.title}</span>
                 </SidebarMenuButton>
+                <SidebarMenuAction
+                  showOnHover
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteChat(chat.id);
+                  }}
+                >
+                  <Trash2 className="size-4" />
+                  <span className="sr-only">Delete</span>
+                </SidebarMenuAction>
               </SidebarMenuItem>
             ))}
           </SidebarMenu>
